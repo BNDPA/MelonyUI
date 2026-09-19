@@ -8,12 +8,13 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 function Library:CreateWindow(config)
-    config = config.Title or "MelonyUI"
+    config = config or {}
+    local WindowName = config.Title or "MelonyUI"
     
     local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
     
-    -- Сильно уменьшаем размеры для телефонов
-    local windowSize = isMobile and UDim2.fromOffset(380, 240) or UDim2.fromOffset(850, 600)
+    -- Удобный средний размер для телефонов, чтобы всё помещалось и было читаемым
+    local windowSize = isMobile and UDim2.fromOffset(560, 360) or (config.Size or UDim2.fromOffset(850, 600))
     
     local Window = {}
     Window.Tabs = {}
@@ -51,10 +52,10 @@ function Library:CreateWindow(config)
     UIStroke.Thickness = 1
     UIStroke.Parent = MainFrame
 
-    -- Принудительное уменьшение через UIScale для мобильных
+    -- Без сильного сжатия, оставляем нормальный масштаб для комфортного тапа
     if isMobile then
         local uiScale = Instance.new("UIScale")
-        uiScale.Scale = 0.75 -- Уменьшаем интерфейс на 25%, чтобы он стал компактным
+        uiScale.Scale = 1.0 
         uiScale.Parent = MainFrame
     end
 
@@ -86,8 +87,8 @@ function Library:CreateWindow(config)
 
     local TabBar = Instance.new("ScrollingFrame")
     TabBar.Name = "TabBar"
-    TabBar.Size = UDim2.new(0, isMobile and 100 or 180, 1, -16)
-    TabBar.Position = UDim2.new(0, 8, 0, 8)
+    TabBar.Size = UDim2.new(0, 150, 1, -20)
+    TabBar.Position = UDim2.new(0, 10, 0, 10)
     TabBar.BackgroundTransparency = 1
     TabBar.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabBar.ScrollBarThickness = 0
@@ -95,13 +96,13 @@ function Library:CreateWindow(config)
 
     local UIListLayout = Instance.new("UIListLayout")
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    UIListLayout.Padding = UDim.new(0, 4)
+    UIListLayout.Padding = UDim.new(0, 6)
     UIListLayout.Parent = TabBar
 
     local ContainerHolder = Instance.new("Frame")
     ContainerHolder.Name = "ContainerHolder"
-    ContainerHolder.Size = UDim2.new(1, isMobile and -114 or -210, 1, -16)
-    ContainerHolder.Position = UDim2.new(0, isMobile and 110 or 200, 0, 8)
+    ContainerHolder.Size = UDim2.new(1, -170, 1, -20)
+    ContainerHolder.Position = UDim2.new(0, 165, 0, 10)
     ContainerHolder.BackgroundTransparency = 1
     ContainerHolder.Parent = MainFrame
 
@@ -113,12 +114,12 @@ function Library:CreateWindow(config)
 
         local TabButton = Instance.new("TextButton")
         TabButton.Name = TabName .. "Button"
-        TabButton.Size = UDim2.new(1, 0, 0, isMobile and 26 or 38)
+        TabButton.Size = UDim2.new(1, 0, 0, 36)
         TabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
         TabButton.TextColor3 = Color3.fromRGB(150, 150, 160)
-        TabButton.TextSize = isMobile and 10 or 14
+        TabButton.TextSize = 13
         TabButton.Font = Enum.Font.GothamMedium
-        TabButton.Text = " " .. TabName
+        TabButton.Text = "   " .. TabName
         TabButton.TextXAlignment = Enum.TextXAlignment.Left
         TabButton.AutoButtonColor = false
         TabButton.Parent = TabBar
@@ -164,7 +165,7 @@ function Library:CreateWindow(config)
 
         local LeftLayout = Instance.new("UIListLayout")
         LeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        LeftLayout.Padding = UDim.new(0, 6)
+        LeftLayout.Padding = UDim.new(0, 8)
         LeftLayout.Parent = LeftColumn
 
         local RightColumn = Instance.new("ScrollingFrame")
@@ -177,7 +178,7 @@ function Library:CreateWindow(config)
 
         local RightLayout = Instance.new("UIListLayout")
         RightLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        RightLayout.Padding = UDim.new(0, 6)
+        RightLayout.Padding = UDim.new(0, 8)
         RightLayout.Parent = RightColumn
 
         function Tab:Section(secConfig)
@@ -189,7 +190,7 @@ function Library:CreateWindow(config)
 
             local SectionFrame = Instance.new("Frame")
             SectionFrame.Name = SecTitle .. "Section"
-            SectionFrame.Size = UDim2.new(1, 0, 0, 30)
+            SectionFrame.Size = UDim2.new(1, 0, 0, 40)
             SectionFrame.BackgroundColor3 = Color3.fromRGB(17, 17, 21)
             SectionFrame.Parent = ParentColumn
 
@@ -202,30 +203,30 @@ function Library:CreateWindow(config)
             SecStroke.Parent = SectionFrame
 
             local TitleLabel = Instance.new("TextLabel")
-            TitleLabel.Size = UDim2.new(1, -12, 0, 20)
-            TitleLabel.Position = UDim2.new(0, 6, 0, 2)
+            TitleLabel.Size = UDim2.new(1, -16, 0, 26)
+            TitleLabel.Position = UDim2.new(0, 8, 0, 4)
             TitleLabel.BackgroundTransparency = 1
             TitleLabel.Text = SecTitle:upper()
             TitleLabel.TextColor3 = Color3.fromRGB(100, 100, 115)
-            TitleLabel.TextSize = isMobile and 8 or 10
+            TitleLabel.TextSize = 10
             TitleLabel.Font = Enum.Font.GothamBold
             TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
             TitleLabel.Parent = SectionFrame
 
             local ContentHolder = Instance.new("Frame")
             ContentHolder.Name = "Content"
-            ContentHolder.Size = UDim2.new(1, 0, 1, -22)
-            ContentHolder.Position = UDim2.new(0, 0, 0, 22)
+            ContentHolder.Size = UDim2.new(1, 0, 1, -30)
+            ContentHolder.Position = UDim2.new(0, 0, 0, 30)
             ContentHolder.BackgroundTransparency = 1
             ContentHolder.Parent = SectionFrame
 
             local ContentLayout = Instance.new("UIListLayout")
             ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-            ContentLayout.Padding = UDim.new(0, 4)
+            ContentLayout.Padding = UDim.new(0, 6)
             ContentLayout.Parent = ContentHolder
 
             ContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                SectionFrame.Size = UDim2.new(1, 0, 0, ContentLayout.AbsoluteContentSize.Y + 28)
+                SectionFrame.Size = UDim2.new(1, 0, 0, ContentLayout.AbsoluteContentSize.Y + 38)
             end)
 
             local Section = {}
@@ -239,25 +240,25 @@ function Library:CreateWindow(config)
                 local State = Default
 
                 local ToggleButton = Instance.new("TextButton")
-                ToggleButton.Size = UDim2.new(1, 0, 0, isMobile and 18 or 22)
+                ToggleButton.Size = UDim2.new(1, 0, 0, 26)
                 ToggleButton.BackgroundTransparency = 1
                 ToggleButton.Text = ""
                 ToggleButton.Parent = ContentHolder
 
                 local Label = Instance.new("TextLabel")
-                Label.Size = UDim2.new(1, -28, 1, 0)
-                Label.Position = UDim2.new(0, 6, 0, 0)
+                Label.Size = UDim2.new(1, -35, 1, 0)
+                Label.Position = UDim2.new(0, 8, 0, 0)
                 Label.BackgroundTransparency = 1
                 Label.Text = TTitle
                 Label.TextColor3 = Color3.fromRGB(200, 200, 210)
-                Label.TextSize = isMobile and 10 or 12
+                Label.TextSize = 12
                 Label.Font = Enum.Font.Gotham
                 Label.TextXAlignment = Enum.TextXAlignment.Left
                 Label.Parent = ToggleButton
 
                 local Box = Instance.new("Frame")
-                Box.Size = UDim2.fromOffset(isMobile and 12 or 14, isMobile and 12 or 14)
-                Box.Position = UDim2.new(1, isMobile and -18 or -20, 0.5, isMobile and -6 or -7)
+                Box.Size = UDim2.fromOffset(16, 16)
+                Box.Position = UDim2.new(1, -24, 0.5, -8)
                 Box.BackgroundColor3 = State and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(25, 25, 30)
                 Box.Parent = ToggleButton
 
@@ -293,3 +294,4 @@ function Library:CreateWindow(config)
 end
 
 return Library
+
