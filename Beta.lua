@@ -13,8 +13,8 @@ function Library:CreateWindow(config)
     
     local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
     
-    -- Удобный средний размер для телефонов, чтобы всё помещалось и было читаемым
-    local windowSize = isMobile and UDim2.fromOffset(560, 360) or (config.Size or UDim2.fromOffset(850, 600))
+    -- Оптимальный увеличенный размер: просторный для ПК, и комфортный для телефонов
+    local windowSize = isMobile and UDim2.fromOffset(640, 400) or (config.Size or UDim2.fromOffset(850, 550))
     
     local Window = {}
     Window.Tabs = {}
@@ -52,14 +52,7 @@ function Library:CreateWindow(config)
     UIStroke.Thickness = 1
     UIStroke.Parent = MainFrame
 
-    -- Без сильного сжатия, оставляем нормальный масштаб для комфортного тапа
-    if isMobile then
-        local uiScale = Instance.new("UIScale")
-        uiScale.Scale = 1.0 
-        uiScale.Parent = MainFrame
-    end
-
-    -- Перетаскивание
+    -- Перетаскивание окна мышей или пальцем
     local dragging, dragStart, startPos
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -85,9 +78,10 @@ function Library:CreateWindow(config)
         end
     end)
 
+    -- Левая панель вкладок (оставляем место внизу для профиля)
     local TabBar = Instance.new("ScrollingFrame")
     TabBar.Name = "TabBar"
-    TabBar.Size = UDim2.new(0, 150, 1, -20)
+    TabBar.Size = UDim2.new(0, 180, 1, -75)
     TabBar.Position = UDim2.new(0, 10, 0, 10)
     TabBar.BackgroundTransparency = 1
     TabBar.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -99,10 +93,66 @@ function Library:CreateWindow(config)
     UIListLayout.Padding = UDim.new(0, 6)
     UIListLayout.Parent = TabBar
 
+    -- Блок профиля игрока в самом низу левой панели (как в Neverlose)
+    local UserProfileFrame = Instance.new("Frame")
+    UserProfileFrame.Name = "UserProfile"
+    UserProfileFrame.Size = UDim2.new(0, 180, 0, 55)
+    UserProfileFrame.Position = UDim2.new(0, 10, 1, -65)
+    UserProfileFrame.BackgroundColor3 = Color3.fromRGB(17, 17, 21)
+    UserProfileFrame.Parent = MainFrame
+
+    local ProfileCorner = Instance.new("UICorner")
+    ProfileCorner.CornerRadius = UDim.new(0, 6)
+    ProfileCorner.Parent = UserProfileFrame
+
+    local ProfileStroke = Instance.new("UIStroke")
+    ProfileStroke.Color = Color3.fromRGB(28, 28, 35)
+    ProfileStroke.Parent = UserProfileFrame
+
+    -- Аватарка (лицо игрока)
+    local AvatarImage = Instance.new("ImageLabel")
+    AvatarImage.Name = "Avatar"
+    AvatarImage.Size = UDim2.fromOffset(36, 36)
+    AvatarImage.Position = UDim2.new(0, 10, 0.5, -18)
+    AvatarImage.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    AvatarImage.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size42x42)
+    AvatarImage.Parent = UserProfileFrame
+
+    local AvatarCorner = Instance.new("UICorner")
+    AvatarCorner.CornerRadius = UDim.new(0, 4)
+    AvatarCorner.Parent = AvatarImage
+
+    -- Никнейм игрока
+    local NameLabel = Instance.new("TextLabel")
+    NameLabel.Name = "Username"
+    NameLabel.Size = UDim2.new(1, -56, 0, 18)
+    NameLabel.Position = UDim2.new(0, 52, 0, 10)
+    NameLabel.BackgroundTransparency = 1
+    NameLabel.Text = LocalPlayer.Name
+    NameLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
+    NameLabel.TextSize = 12
+    NameLabel.Font = Enum.Font.GothamBold
+    NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    NameLabel.Parent = UserProfileFrame
+
+    -- Статус / Название чита под ником
+    local StatusLabel = Instance.new("TextLabel")
+    StatusLabel.Name = "Status"
+    StatusLabel.Size = UDim2.new(1, -56, 0, 16)
+    StatusLabel.Position = UDim2.new(0, 52, 0, 28)
+    StatusLabel.BackgroundTransparency = 1
+    StatusLabel.Text = "Neverlose"
+    StatusLabel.TextColor3 = Color3.fromRGB(100, 100, 115)
+    StatusLabel.TextSize = 10
+    StatusLabel.Font = Enum.Font.Gotham
+    StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+    StatusLabel.Parent = UserProfileFrame
+
+    -- Контейнер для страниц
     local ContainerHolder = Instance.new("Frame")
     ContainerHolder.Name = "ContainerHolder"
-    ContainerHolder.Size = UDim2.new(1, -170, 1, -20)
-    ContainerHolder.Position = UDim2.new(0, 165, 0, 10)
+    ContainerHolder.Size = UDim2.new(1, -205, 1, -20)
+    ContainerHolder.Position = UDim2.new(0, 195, 0, 10)
     ContainerHolder.BackgroundTransparency = 1
     ContainerHolder.Parent = MainFrame
 
@@ -114,7 +164,7 @@ function Library:CreateWindow(config)
 
         local TabButton = Instance.new("TextButton")
         TabButton.Name = TabName .. "Button"
-        TabButton.Size = UDim2.new(1, 0, 0, 36)
+        TabButton.Size = UDim2.new(1, 0, 0, 38)
         TabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
         TabButton.TextColor3 = Color3.fromRGB(150, 150, 160)
         TabButton.TextSize = 13
@@ -294,4 +344,3 @@ function Library:CreateWindow(config)
 end
 
 return Library
-
