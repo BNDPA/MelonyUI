@@ -8,13 +8,9 @@ local LocalPlayer = Players.LocalPlayer
 
 function Library:CreateWindow(config)
     config = config or {}
-    local WindowName = config.Title or "MelonyUI"
-    -- Настройка своей иконки для круглой кнопки (вставьте ID вашей картинки, например "rbxassetid://0000000000")
     local ToggleImageId = config.Image or Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size42x42)
     
     local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-    
-    -- Компактный и удобный размер для телефонов
     local windowSize = isMobile and UDim2.fromOffset(500, 310) or (config.Size or UDim2.fromOffset(750, 480))
     
     local Window = {}
@@ -24,19 +20,14 @@ function Library:CreateWindow(config)
     ScreenGui.Name = "MelonyUI_Neverlose"
     ScreenGui.ResetOnSpawn = false
     
-    if syn and syn.protect_gui then
-        syn.protect_gui(ScreenGui)
+    pcall(function()
         ScreenGui.Parent = CoreGui
-    else
-        pcall(function()
-            ScreenGui.Parent = CoreGui
-        end)
-    end
+    end)
     if not ScreenGui.Parent then
         ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
     end
 
-    -- Плавающая круглая кнопка для открытия/закрытия меню
+    -- Плавающая круглая кнопка для открытия/закрытия
     local ToggleButtonUI = Instance.new("ImageButton")
     ToggleButtonUI.Name = "ToggleMenuButton"
     ToggleButtonUI.Size = UDim2.fromOffset(45, 45)
@@ -47,7 +38,7 @@ function Library:CreateWindow(config)
     ToggleButtonUI.Parent = ScreenGui
 
     local ToggleCorner = Instance.new("UICorner")
-    ToggleCorner.CornerRadius = UDim.new(1, 0) -- Делает кнопку идеально круглой
+    ToggleCorner.CornerRadius = UDim.new(1, 0)
     ToggleCorner.Parent = ToggleButtonUI
 
     local ToggleStroke = Instance.new("UIStroke")
@@ -63,14 +54,13 @@ function Library:CreateWindow(config)
     MainFrame.BorderSizePixel = 0
     MainFrame.Parent = ScreenGui
 
-    -- Открытие/закрытие по клику на круглую кнопку
     local menuVisible = true
     ToggleButtonUI.MouseButton1Click:Connect(function()
         menuVisible = not menuVisible
         MainFrame.Visible = menuVisible
     end)
 
-    -- Перетаскивание кнопки открытия
+    -- Перетаскивание круглой кнопки
     local btnDragging, btnDragStart, btnStartPos
     ToggleButtonUI.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -105,7 +95,7 @@ function Library:CreateWindow(config)
     UIStroke.Thickness = 1
     UIStroke.Parent = MainFrame
 
-    -- Невидимая шапка (Topbar) только для перетаскивания окна (как в ПК приложениях)
+    -- Перетаскивание ТОЛЬКО за верхнюю шапку (как ПК приложение)
     local TopBarDrag = Instance.new("Frame")
     TopBarDrag.Name = "TopBarDrag"
     TopBarDrag.Size = UDim2.new(1, 0, 0, 30)
@@ -154,7 +144,6 @@ function Library:CreateWindow(config)
 
     -- Профиль игрока внизу левой панели
     local UserProfileFrame = Instance.new("Frame")
-    UserProfileFrame.Name = "UserProfile"
     UserProfileFrame.Size = UDim2.new(0, 150, 0, 50)
     UserProfileFrame.Position = UDim2.new(0, 10, 1, -60)
     UserProfileFrame.BackgroundColor3 = Color3.fromRGB(17, 17, 21)
@@ -201,9 +190,7 @@ function Library:CreateWindow(config)
     StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
     StatusLabel.Parent = UserProfileFrame
 
-    -- Контейнер для страниц
     local ContainerHolder = Instance.new("Frame")
-    ContainerHolder.Name = "ContainerHolder"
     ContainerHolder.Size = UDim2.new(1, -175, 1, -20)
     ContainerHolder.Position = UDim2.new(0, 165, 0, 10)
     ContainerHolder.BackgroundTransparency = 1
@@ -212,11 +199,9 @@ function Library:CreateWindow(config)
     function Window:Tab(tabConfig)
         tabConfig = tabConfig or {}
         local TabName = tabConfig.Title or "Tab"
-
         local Tab = {}
 
         local TabButton = Instance.new("TextButton")
-        TabButton.Name = TabName .. "Button"
         TabButton.Size = UDim2.new(1, 0, 0, 32)
         TabButton.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
         TabButton.TextColor3 = Color3.fromRGB(150, 150, 160)
@@ -232,7 +217,6 @@ function Library:CreateWindow(config)
         TabCorner.Parent = TabButton
 
         local TabPage = Instance.new("ScrollingFrame")
-        TabPage.Name = TabName .. "Page"
         TabPage.Size = UDim2.new(1, 0, 1, 0)
         TabPage.BackgroundTransparency = 1
         TabPage.Visible = false
@@ -260,7 +244,6 @@ function Library:CreateWindow(config)
         table.insert(Window.Tabs, { Button = TabButton, Page = TabPage })
 
         local LeftColumn = Instance.new("ScrollingFrame")
-        LeftColumn.Name = "LeftColumn"
         LeftColumn.Size = UDim2.new(0.48, 0, 1, 0)
         LeftColumn.BackgroundTransparency = 1
         LeftColumn.ScrollBarThickness = 2
@@ -271,13 +254,11 @@ function Library:CreateWindow(config)
         LeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
         LeftLayout.Padding = UDim.new(0, 6)
         LeftLayout.Parent = LeftColumn
-
         LeftLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             LeftColumn.CanvasSize = UDim2.new(0, 0, 0, LeftLayout.AbsoluteContentSize.Y + 10)
         end)
 
         local RightColumn = Instance.new("ScrollingFrame")
-        RightColumn.Name = "RightColumn"
         RightColumn.Size = UDim2.new(0.48, 0, 1, 0)
         RightColumn.Position = UDim2.new(0.52, 0, 0, 0)
         RightColumn.BackgroundTransparency = 1
@@ -289,7 +270,6 @@ function Library:CreateWindow(config)
         RightLayout.SortOrder = Enum.SortOrder.LayoutOrder
         RightLayout.Padding = UDim.new(0, 6)
         RightLayout.Parent = RightColumn
-
         RightLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             RightColumn.CanvasSize = UDim2.new(0, 0, 0, RightLayout.AbsoluteContentSize.Y + 10)
         end)
@@ -298,11 +278,9 @@ function Library:CreateWindow(config)
             secConfig = secConfig or {}
             local SecTitle = secConfig.Title or "Section"
             local Side = secConfig.Side or "Left"
-
             local ParentColumn = (Side:lower() == "right") and RightColumn or LeftColumn
 
             local SectionFrame = Instance.new("Frame")
-            SectionFrame.Name = SecTitle .. "Section"
             SectionFrame.Size = UDim2.new(1, 0, 0, 35)
             SectionFrame.BackgroundColor3 = Color3.fromRGB(17, 17, 21)
             SectionFrame.Parent = ParentColumn
@@ -327,7 +305,6 @@ function Library:CreateWindow(config)
             TitleLabel.Parent = SectionFrame
 
             local ContentHolder = Instance.new("Frame")
-            ContentHolder.Name = "Content"
             ContentHolder.Size = UDim2.new(1, 0, 1, -26)
             ContentHolder.Position = UDim2.new(0, 0, 0, 26)
             ContentHolder.BackgroundTransparency = 1
@@ -337,19 +314,16 @@ function Library:CreateWindow(config)
             ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
             ContentLayout.Padding = UDim.new(0, 4)
             ContentLayout.Parent = ContentHolder
-
             ContentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
                 SectionFrame.Size = UDim2.new(1, 0, 0, ContentLayout.AbsoluteContentSize.Y + 32)
             end)
 
             local Section = {}
-
             function Section:Toggle(toggleConfig)
                 toggleConfig = toggleConfig or {}
                 local TTitle = toggleConfig.Title or "Toggle"
                 local Default = toggleConfig.Default or false
                 local Callback = toggleConfig.Callback or function() end
-
                 local State = Default
 
                 local ToggleButton = Instance.new("TextButton")
@@ -383,23 +357,15 @@ function Library:CreateWindow(config)
                 BoxStroke.Color = State and Color3.fromRGB(80, 140, 255) or Color3.fromRGB(45, 45, 55)
                 BoxStroke.Parent = Box
 
-                local function UpdateState()
-                    Box.BackgroundColor3 = State and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(25, 25, 30)
-                    BoxStroke.Color = State and Color3.fromRGB(80, 140, 255) or Color3.fromRGB(45, 45, 55)
-                    task.spawn(function()
-                        pcall(Callback, State)
-                    end)
-                end
-
                 ToggleButton.MouseButton1Click:Connect(function()
                     State = not State
-                    UpdateState()
+                    Box.BackgroundColor3 = State and Color3.fromRGB(60, 120, 255) or Color3.fromRGB(25, 25, 30)
+                    BoxStroke.Color = State and Color3.fromRGB(80, 140, 255) or Color3.fromRGB(45, 45, 55)
+                    task.spawn(function() pcall(Callback, State) end)
                 end)
             end
-
             return Section
         end
-
         return Tab
     end
 
